@@ -2,10 +2,11 @@ package com.ouitech.wdi.tfn.domain;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tfn {
+public class Tfn implements Serializable{
 
     private String testCase;
     private String testSuite;

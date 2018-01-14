@@ -2,10 +2,7 @@ package com.ouitech.wdi.tfn;
 
 import com.ouitech.wdi.tfn.domain.Results;
 import com.ouitech.wdi.tfn.domain.Tfn;
-import com.ouitech.wdi.tfn.service.ReaderTfn;
-import com.ouitech.wdi.tfn.service.ReaderTfnXml;
-import com.ouitech.wdi.tfn.service.WriterResults;
-import com.ouitech.wdi.tfn.service.WriterResultsCsv;
+import com.ouitech.wdi.tfn.service.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +21,7 @@ public class Main {
 
         List<Tfn> tfns = reader.parsing(parentFolder);
 
-        WriterResults<Writer> writer = new WriterResultsCsv();
+        WriterResults<Writer> writer = new WriterResultsJson();
 
         writer.saveResults(tfns);
 

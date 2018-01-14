@@ -17,6 +17,7 @@ public class MyProperties {
     public static final String ATRIBUT_FAIL_ON_ERROR = "atribut.failOnError";
     public static final String ATRIBUT_NAME = "atribut.name";
     public static final String RESULTS_CSV_PATH = "results.csv.path";
+    public static final String RESULTS_JSON_PATH = "results.json.path";
 
     private static Properties props;
 
@@ -29,6 +30,10 @@ public class MyProperties {
             e.printStackTrace();
         }
 
+    }
+
+    public static String getOutputResultsJsonPath(){
+        return props.getProperty(RESULTS_JSON_PATH);
     }
 
     public static String getOutputResultsCsvPath(){
