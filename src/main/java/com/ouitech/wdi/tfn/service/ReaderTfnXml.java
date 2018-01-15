@@ -26,7 +26,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
         //Recupération des dossiers interface
         List<File> interfaceFolders = Arrays.stream(Objects.requireNonNull(file.listFiles()))
                 .filter(f -> MyProperties.getInterfacesToScan().contains(f.getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());                                
 
         //Récupération des fichiers xml
         Map<String, List<File>> mapXmlFiles = getXmlFiles(interfaceFolders);
@@ -65,7 +65,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
             if (getFileTfnToScan().contains(file.getName())){
                 xmlFiles.add(file);
             }
-            else if(folder.isDirectory()){
+            else if(file.isDirectory()){
                 xmlFiles.addAll(findXmlFiles(file));
             }
 

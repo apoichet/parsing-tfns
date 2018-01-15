@@ -21,7 +21,7 @@ public class Main {
 
         List<Tfn> tfns = reader.parsing(parentFolder);
 
-        WriterResults<Writer> writer = new WriterResultsJson();
+        WriterResults<Writer> writer = new WriterResultsCsv();
 
         writer.saveResults(tfns);
 
