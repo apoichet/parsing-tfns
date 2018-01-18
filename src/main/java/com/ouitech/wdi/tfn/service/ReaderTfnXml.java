@@ -2,6 +2,7 @@ package com.ouitech.wdi.tfn.service;
 
 import com.ouitech.wdi.tfn.MyProperties;
 import com.ouitech.wdi.tfn.domain.Tfn;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -124,7 +125,6 @@ public class ReaderTfnXml implements ReaderTfn<File> {
                                     .withFirstInterface(folderInterface)
                                     .withTestSuite(testSuiteElement.getAttribute(getAtributName()))
                                     .withTestCase(testCase.getAttribute(getAtributName()))
-                                    .withActive(testCase.getAttribute(getAtributFailOnError()))
                                     .build();
 
                             tfnMap.put(key, tfn);
@@ -142,7 +142,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
         return Comparator.comparing(Tfn::nbrInterface)
                 .thenComparing(Tfn::getFileName)
                 .thenComparing(Tfn::getTestSuite)
-                .thenComparing((Function<Tfn, Boolean>) Tfn::isActive);
+                .thenComparing(Tfn::getStatus);
     }
 
 

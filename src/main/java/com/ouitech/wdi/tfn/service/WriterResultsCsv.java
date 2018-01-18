@@ -1,7 +1,5 @@
 package com.ouitech.wdi.tfn.service;
 
-import com.ouitech.wdi.tfn.domain.Tfn;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -9,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.ouitech.wdi.tfn.MyProperties.getOutputResultsCsvPath;
+
+import com.ouitech.wdi.tfn.domain.Tfn;
 
 public class WriterResultsCsv implements WriterResults<Writer> {
 

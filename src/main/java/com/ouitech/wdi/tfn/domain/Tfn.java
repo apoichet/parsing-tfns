@@ -1,134 +1,178 @@
 package com.ouitech.wdi.tfn.domain;
 
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tfn implements Serializable{
+import org.apache.commons.collections4.CollectionUtils;
 
-    private String testCase;
-    private String testSuite;
-    private String fileName;
-    private boolean active;
-    private List<String> interfaces = new ArrayList<>();
+public class Tfn {
 
-    private Tfn(Builder builder) {
-        this.testCase = builder.testCase;
-        this.testSuite = builder.testSuite;
-        this.fileName = builder.fileName;
-        this.active = builder.active;
-        this.interfaces = builder.interfaces;
-    }
+	private String fileName;
+	private String projectName;
+	private String testSuite;
+	private String testCase;
+	private Double time;
+	private List<String> interfaces;
+	private TfnStateEnum status;
+	private List<TestStep> steps;
+	private String exception;
 
-    public String getTestCase() {
-        return testCase;
-    }
+	public Tfn(Builder builder) {
+		this.fileName = builder.fileName;
+		this.projectName = builder.projectName;
+		this.testSuite = builder.testSuite;
+		this.testCase = builder.testCase;
+		this.time = builder.time;
+		this.interfaces = builder.interfaces;
+		this.status = builder.status;
+		this.steps = builder.steps;
+		this.exception = builder.exception;
+	}
 
-    public String getFileName() {
-        return fileName;
-    }
+	public String getFileName() {
+		return fileName;
+	}
 
-    public List<String> getInterfaces() {
-        return interfaces;
-    }
+	public void setFileName(final String fileName) {
+		this.fileName = fileName;
+	}
 
-    public String getTestSuite() {
-        return testSuite;
-    }
+	public String getProjectName() {
+		return projectName;
+	}
 
-    public boolean isActive() {
-        return active;
-    }
+	public void setProjectName(final String projectName) {
+		this.projectName = projectName;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public String getTestSuite() {
+		return testSuite;
+	}
 
-        Tfn tfn = (Tfn) o;
+	public void setTestSuite(final String testSuite) {
+		this.testSuite = testSuite;
+	}
 
-        return testCase.equals(tfn.testCase);
-    }
+	public String getTestCase() {
+		return testCase;
+	}
 
-    public String isActive(boolean active){
+	public void setTestCase(final String testCase) {
+		this.testCase = testCase;
+	}
 
-        return active?"Active":"Desactive";
+	public Double getTime() {
+		return time;
+	}
 
-    }
+	public void setTime(final Double time) {
+		this.time = time;
+	}
 
-    public int nbrInterface(){
-        return CollectionUtils.isEmpty(interfaces) ? 0 : interfaces.size();
+	public List<String> getInterfaces() {
+		return interfaces;
+	}
 
-    }
+	public void setInterfaces(final List<String> interfaces) {
+		this.interfaces = interfaces;
+	}
 
-    public boolean addInterface(String tfnInterface){
-        return CollectionUtils.isNotEmpty(interfaces) && interfaces.add(tfnInterface);
-    }
+	public TfnStateEnum getStatus() {
+		return status;
+	}
 
-    @Override
-    public String toString() {
-        return fileName + ";"
-                + testSuite + ";"
-                + testCase + ";"
-                + isActive(active) + ";"
-                + interfaces + ";"
-                + nbrInterface() + "\n";
-    }
+	public void setStatus(final TfnStateEnum status) {
+		this.status = status;
+	}
 
-    public static Builder builder(){
-        return new Builder();
-    }
+	public List<TestStep> getSteps() {
+		return steps;
+	}
 
-    public static class Builder{
-        private String testCase;
-        private String testSuite;
-        private String fileName;
-        private boolean active;
-        private List<String> interfaces = new ArrayList<>();
+	public void setSteps(final List<TestStep> steps) {
+		this.steps = steps;
+	}
 
-        public Builder withTestCase(String testCase) {
-            this.testCase = testCase;
-            return this;
-        }
+	public String getException() {
+		return exception;
+	}
 
-        public Builder withTestSuite(String testSuite) {
-            this.testSuite = testSuite;
-            return this;
-        }
+	public void setException(final String exception) {
+		this.exception = exception;
+	}
 
-        public Builder withFileName(String fileName) {
-            this.fileName = fileName;
-            return this;
-        }
+	public static Builder builder(){
+		return new Builder();
+	}
 
-        public Builder withActive(String active) {
-            this.active = Boolean.parseBoolean(active);
-            return this;
-        }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
 
-        public Builder withActive(boolean active) {
-            this.active = active;
-            return this;
-        }
+		Tfn tfn = (Tfn) o;
 
-        public Builder withFirstInterface(String firstInterface) {
-            this.interfaces = new ArrayList<>();
-            this.interfaces.add(firstInterface);
-            return this;
-        }
+		return testCase.equals(tfn.testCase);
+	}
 
-        public Builder withInterfaces(List<String> interfaces) {
-            this.interfaces = interfaces;
-            return this;
-        }
+	public int nbrInterface(){
+		return CollectionUtils.isEmpty(interfaces) ? 0 : interfaces.size();
 
-        public Tfn build(){
-            return new Tfn(this);
-        }
-    }
+	}
 
+	public boolean addInterface(String tfnInterface){
+		return CollectionUtils.isNotEmpty(interfaces) && interfaces.add(tfnInterface);
+	}
 
+	public static class Builder{
+		private String fileName;
+		private String projectName;
+		private String testSuite;
+		private String testCase;
+		private Double time;
+		private List<String> interfaces = new ArrayList<>();
+		private TfnStateEnum status = TfnStateEnum.NONE;
+		private List<TestStep> steps = new ArrayList<>();
+		private String exception;
 
+		public Tfn.Builder withTime(String time) {
+			this.time = Double.parseDouble(time);
+			return this;
+		}
+
+		public Tfn.Builder withTestCase(String testCase) {
+			this.testCase = testCase;
+			return this;
+		}
+
+		public Tfn.Builder withTestSuite(String testSuite) {
+			this.testSuite = testSuite;
+			return this;
+		}
+
+		public Tfn.Builder withFileName(String fileName) {
+			this.fileName = fileName;
+			return this;
+		}
+
+		public Tfn.Builder withProjectName(String projectName) {
+			this.projectName = projectName;
+			return this;
+		}
+
+		public Tfn.Builder withFirstInterface(String firstInterface) {
+			this.interfaces = new ArrayList<>();
+			this.interfaces.add(firstInterface);
+			return this;
+		}
+
+		public Tfn.Builder withInterfaces(List<String> interfaces) {
+			this.interfaces = interfaces;
+			return this;
+		}
+
+		public Tfn build(){
+			return new Tfn(this);
+		}
+	}
 }
