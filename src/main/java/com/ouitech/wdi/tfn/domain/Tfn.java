@@ -14,8 +14,7 @@ public class Tfn {
 	private Double time;
 	private List<String> interfaces;
 	private TfnStateEnum status;
-	private List<TestStep> steps;
-	private String exception;
+	private List<Request> requests;
 
 	public Tfn(Builder builder) {
 		this.fileName = builder.fileName;
@@ -25,8 +24,7 @@ public class Tfn {
 		this.time = builder.time;
 		this.interfaces = builder.interfaces;
 		this.status = builder.status;
-		this.steps = builder.steps;
-		this.exception = builder.exception;
+		this.requests = builder.requests;
 	}
 
 	public String getFileName() {
@@ -85,20 +83,12 @@ public class Tfn {
 		this.status = status;
 	}
 
-	public List<TestStep> getSteps() {
-		return steps;
+	public List<Request> getRequests() {
+		return requests;
 	}
 
-	public void setSteps(final List<TestStep> steps) {
-		this.steps = steps;
-	}
-
-	public String getException() {
-		return exception;
-	}
-
-	public void setException(final String exception) {
-		this.exception = exception;
+	public void setRequests(final List<Request> requests) {
+		this.requests = requests;
 	}
 
 	public static Builder builder(){
@@ -132,8 +122,7 @@ public class Tfn {
 		private Double time;
 		private List<String> interfaces = new ArrayList<>();
 		private TfnStateEnum status = TfnStateEnum.NONE;
-		private List<TestStep> steps = new ArrayList<>();
-		private String exception;
+		private List<Request> requests = new ArrayList<>();
 
 		public Tfn.Builder withTime(String time) {
 			this.time = Double.parseDouble(time);
