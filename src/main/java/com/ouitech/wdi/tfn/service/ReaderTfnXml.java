@@ -2,6 +2,7 @@ package com.ouitech.wdi.tfn.service;
 
 import com.ouitech.wdi.tfn.MyProperties;
 import com.ouitech.wdi.tfn.domain.Tfn;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -26,7 +27,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
         //Recupération des dossiers interface
         List<File> interfaceFolders = Arrays.stream(Objects.requireNonNull(file.listFiles()))
                 .filter(f -> MyProperties.getInterfacesToScan().contains(f.getName()))
-                .collect(Collectors.toList());                                
+                .collect(Collectors.toList());
 
         //Récupération des fichiers xml
         Map<String, List<File>> mapXmlFiles = getXmlFiles(interfaceFolders);
@@ -95,36 +96,43 @@ public class ReaderTfnXml implements ReaderTfn<File> {
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
-            NodeList testSuite = doc.getElementsByTagName(getTestSuiteTagName());
+            NodeList testSuites = doc.getElementsByTagName(getTestSuiteTagName());
 
-            for (int i = 0; i < testSuite.getLength(); i++) {
+            for (int i = 0; i < testSuites.getLength(); i++) {
 
-                NodeList childNodes = testSuite.item(i).getChildNodes();
+                NodeList testSuiteChildNotes = testSuites.item(i).getChildNodes();
 
-                for (int j = 0; j < childNodes.getLength(); j++) {
+                for (int j = 0; j < testSuiteChildNotes.getLength(); j++) {
 
-                    Node nNode = childNodes.item(j);
+                    Node nNode = testSuiteChildNotes.item(j);
 
                     if (nNode.getNodeType() == Node.ELEMENT_NODE &&
                             getTestCaseTagName().equals(nNode.getNodeName())){
 
+                        Element testSuite = (Element) testSuiteChildNotes.item(i);
                         Element testCase = (Element) nNode;
 
                         String key = testCase.getAttribute(getAtributName());
+
+                        String testCaseDisabled = testCase.getAttribute("disabled");
+                        String failOnError = testCase.getAttribute("failOnError");
+                        String failTestCaseOnErrors = testCase.getAttribute("failTestCaseOnErrors");
+                        String testSuiteDisabled = testSuite.getAttribute("disabled");
+                        boolean inactive = isInactiveTfn(testCaseDisabled, failOnError, failTestCaseOnErrors, testSuiteDisabled);
 
                         if (tfnMap.containsKey(key)){
                             Tfn tfn = tfnMap.get(key);
                             tfn.addInterface(folderInterface);
                         }
                         else {
-                            Element testSuiteElement = (Element) testSuite.item(i);
+                            Element testSuiteElement = (Element) testSuites.item(i);
 
                             Tfn tfn = Tfn.builder()
                                     .withFileName(xmlFile.getName())
                                     .withFirstInterface(folderInterface)
                                     .withTestSuite(testSuiteElement.getAttribute(getAtributName()))
                                     .withTestCase(testCase.getAttribute(getAtributName()))
-                                    .withActive(testCase.getAttribute(getAtributFailOnError()))
+                                    .withActive(!inactive)
                                     .build();
 
                             tfnMap.put(key, tfn);
@@ -143,6 +151,13 @@ public class ReaderTfnXml implements ReaderTfn<File> {
                 .thenComparing(Tfn::getFileName)
                 .thenComparing(Tfn::getTestSuite)
                 .thenComparing((Function<Tfn, Boolean>) Tfn::isActive);
+    }
+
+    private boolean isInactiveTfn(String testCaseDisabled, String failOnError, String failTestCaseOnErrors, String testSuiteDisabled) {
+        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals("true")
+                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals("true")
+                || StringUtils.isNotEmpty(failOnError) && failOnError.equals("false")
+                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals("false");
     }
 
 

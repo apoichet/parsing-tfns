@@ -25,7 +25,7 @@ public class WriterResultsCsv implements WriterResults<Writer> {
 
             //Ecriture des resultats
             for (Tfn tfn : tfns) {
-                writer.append(tfn.toString());
+                writer.append(printTfn(tfn));
             }
 
         } catch (IOException e) {
@@ -39,5 +39,14 @@ public class WriterResultsCsv implements WriterResults<Writer> {
             }
         }
         return writer;
+    }
+
+    private String printTfn(final Tfn tfn){
+        return tfn.getFileName()+ ";"
+                + tfn.getTestSuite() + ";"
+                + tfn.getTestCase() + ";"
+                + tfn.isActive()+ ";"
+                + tfn.getInterfaces()+ ";"
+                + tfn.nbrInterface() + "\n";
     }
 }

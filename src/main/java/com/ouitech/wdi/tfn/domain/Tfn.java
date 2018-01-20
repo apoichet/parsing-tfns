@@ -12,7 +12,7 @@ public class Tfn implements Serializable{
     private String testSuite;
     private String fileName;
     private boolean active;
-    private List<String> interfaces = new ArrayList<>();
+    private List<String> interfaces;
 
     private Tfn(Builder builder) {
         this.testCase = builder.testCase;
@@ -65,16 +65,6 @@ public class Tfn implements Serializable{
 
     public boolean addInterface(String tfnInterface){
         return CollectionUtils.isNotEmpty(interfaces) && interfaces.add(tfnInterface);
-    }
-
-    @Override
-    public String toString() {
-        return fileName + ";"
-                + testSuite + ";"
-                + testCase + ";"
-                + isActive(active) + ";"
-                + interfaces + ";"
-                + nbrInterface() + "\n";
     }
 
     public static Builder builder(){
