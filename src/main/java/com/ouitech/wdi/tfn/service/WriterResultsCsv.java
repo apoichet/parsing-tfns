@@ -8,11 +8,12 @@ import java.util.Objects;
 
 import static com.ouitech.wdi.tfn.MyProperties.getOutputResultsCsvPath;
 
+import com.ouitech.wdi.tfn.domain.Request;
 import com.ouitech.wdi.tfn.domain.Tfn;
 
 public class WriterResultsCsv implements WriterResults<Writer> {
 
-    public static final String TITLE = "File Name;Test Suite;Test Case;Activate;Interfaces;Occurrence\n";
+    public static final String TITLE = "File Name;Project Name;Test Suite;Test Case;Status;Interface;Request\n";
 
     @Override
     public Writer saveResults(List<Tfn> tfns) {
@@ -25,7 +26,7 @@ public class WriterResultsCsv implements WriterResults<Writer> {
 
             //Ecriture des resultats
             for (Tfn tfn : tfns) {
-                writer.append(tfn.toString());
+                writer.append(printTfn(tfn));
             }
 
         } catch (IOException e) {
@@ -39,5 +40,25 @@ public class WriterResultsCsv implements WriterResults<Writer> {
             }
         }
         return writer;
+    }
+
+    private String printTfn(Tfn tfn){
+        return tfn.getFileName()+";"+
+                tfn.getProjectName()+";"+
+                tfn.getTestSuite()+";"+
+                tfn.getTestCase()+";"+
+                tfn.getStatus()+";"+
+                tfn.getTfnInterface()+";"+
+                printRequest(tfn.getRequests())+"\n";
+    }
+
+    private String printRequest(List<Request> requests){
+
+        StringBuilder print = new StringBuilder();
+
+        requests.forEach(request -> print.append(request.getName()).append(";"));
+
+        return print.toString();
+
     }
 }

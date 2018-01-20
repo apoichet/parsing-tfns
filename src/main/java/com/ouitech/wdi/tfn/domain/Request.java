@@ -5,34 +5,38 @@ import java.util.Optional;
 
 public class Request {
 
-	private String input;
-	private String output;
+	private String inOut;
+	private String name;
+	private String id;
+	private String profile;
 	private Double time;
 	private LocalDateTime date;
 	private Optional<String> exception;
 
 	public Request(Builder builder) {
-		this.input = builder.input;
-		this.output = builder.output;
+		this.inOut = builder.inOut;
+		this.id = builder.id;
 		this.time = builder.time;
 		this.date = builder.date;
 		this.exception = builder.exception;
+		this.profile = builder.profile;
+		this.name = builder.name;
 	}
 
-	public String getInput() {
-		return input;
+	public String getInOut() {
+		return inOut;
 	}
 
-	public void setInput(final String input) {
-		this.input = input;
+	public void setInOut(final String inOut) {
+		this.inOut = inOut;
 	}
 
-	public String getOutput() {
-		return output;
+	public String getId() {
+		return id;
 	}
 
-	public void setOutput(final String output) {
-		this.output = output;
+	public void setId(final String id) {
+		this.id = id;
 	}
 
 	public Double getTime() {
@@ -59,21 +63,53 @@ public class Request {
 		this.exception = exception;
 	}
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
+    public static Builder builder(){
+		return new Builder();
+	}
+
 	public static class Builder{
 
-		private String input;
-		private String output;
+		private String inOut;
+		private String id;
 		private Double time;
 		private LocalDateTime date;
+		private String profile;
 		private Optional<String> exception;
+		private String name;
 
-		public Builder withInput(final String input) {
-			this.input = input;
+        public Builder withName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder withProfile(final String profile){
+			this.profile = profile;
 			return this;
 		}
 
-		public Builder withOutput(final String output) {
-			this.output = output;
+		public Builder withInOut(final String inOut) {
+			this.inOut = inOut;
+			return this;
+		}
+
+		public Builder withId(final String id) {
+			this.id = id;
 			return this;
 		}
 

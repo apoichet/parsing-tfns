@@ -5,14 +5,17 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import static com.ouitech.wdi.tfn.domain.TfnStateEnum.INACTIVE;
+import static com.ouitech.wdi.tfn.domain.TfnStateEnum.NONE;
+
 public class Tfn {
 
 	private String fileName;
 	private String projectName;
 	private String testSuite;
 	private String testCase;
-	private Double time;
-	private List<String> interfaces;
+	private String time;
+	private String tfnInterface;
 	private TfnStateEnum status;
 	private List<Request> requests;
 
@@ -22,7 +25,7 @@ public class Tfn {
 		this.testSuite = builder.testSuite;
 		this.testCase = builder.testCase;
 		this.time = builder.time;
-		this.interfaces = builder.interfaces;
+		this.tfnInterface = builder.tfnInterface;
 		this.status = builder.status;
 		this.requests = builder.requests;
 	}
@@ -59,20 +62,20 @@ public class Tfn {
 		this.testCase = testCase;
 	}
 
-	public Double getTime() {
+	public String getTime() {
 		return time;
 	}
 
-	public void setTime(final Double time) {
+	public void setTime(final String time) {
 		this.time = time;
 	}
 
-	public List<String> getInterfaces() {
-		return interfaces;
+	public String getTfnInterface() {
+		return tfnInterface;
 	}
 
-	public void setInterfaces(final List<String> interfaces) {
-		this.interfaces = interfaces;
+	public void setTfnInterface(final String tfnInterface) {
+		this.tfnInterface = tfnInterface;
 	}
 
 	public TfnStateEnum getStatus() {
@@ -105,27 +108,18 @@ public class Tfn {
 		return testCase.equals(tfn.testCase);
 	}
 
-	public int nbrInterface(){
-		return CollectionUtils.isEmpty(interfaces) ? 0 : interfaces.size();
-
-	}
-
-	public boolean addInterface(String tfnInterface){
-		return CollectionUtils.isNotEmpty(interfaces) && interfaces.add(tfnInterface);
-	}
-
 	public static class Builder{
 		private String fileName;
 		private String projectName;
 		private String testSuite;
 		private String testCase;
-		private Double time;
-		private List<String> interfaces = new ArrayList<>();
-		private TfnStateEnum status = TfnStateEnum.NONE;
+		private String time;
+		private String tfnInterface;
+		private TfnStateEnum status;
 		private List<Request> requests = new ArrayList<>();
 
 		public Tfn.Builder withTime(String time) {
-			this.time = Double.parseDouble(time);
+			this.time = time;
 			return this;
 		}
 
@@ -149,16 +143,17 @@ public class Tfn {
 			return this;
 		}
 
-		public Tfn.Builder withFirstInterface(String firstInterface) {
-			this.interfaces = new ArrayList<>();
-			this.interfaces.add(firstInterface);
+
+		public Tfn.Builder withInterfaces(String tfnInterface) {
+			this.tfnInterface = tfnInterface;
 			return this;
 		}
 
-		public Tfn.Builder withInterfaces(List<String> interfaces) {
-			this.interfaces = interfaces;
-			return this;
-		}
+		public Tfn.Builder withInactiveStatus(boolean inactive){
+		    TfnStateEnum status = inactive ? INACTIVE : NONE;
+		    this.status = status;
+		    return this;
+        }
 
 		public Tfn build(){
 			return new Tfn(this);
