@@ -1,6 +1,7 @@
 package com.ouitech.wdi.tfn.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,6 +30,10 @@ public class Tfn {
 		this.status = builder.status;
 		this.requests = builder.requests;
 	}
+
+	public String print(){
+	    return "";
+    };
 
 	public String getFileName() {
 		return fileName;
@@ -92,6 +97,13 @@ public class Tfn {
 
 	public void setRequests(final List<Request> requests) {
 		this.requests = requests;
+	}
+
+	public static Comparator<Tfn> compare() {
+		return Comparator.comparing(Tfn::getTfnInterface)
+				.thenComparing(Tfn::getFileName)
+				.thenComparing(Tfn::getTestSuite)
+				.thenComparing(Tfn::getStatus);
 	}
 
 	public static Builder builder(){

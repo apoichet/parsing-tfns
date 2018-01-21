@@ -21,15 +21,33 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ouitech.wdi.tfn.MyProperties.*;
+import static com.ouitech.wdi.tfn.domain.Tfn.compare;
+import static java.util.stream.Collectors.toList;
 
 public class ReaderTfnXml implements ReaderTfn<File> {
+
+    private static final String PROJECT_TAG_NAME = "con:soapui-project";
+    private static final String NAME_ATTRIBUTE = "name";
+    private static final String TEST_SUITE_TAG_NAME = "con:testSuite";
+    private static final String DISABLED_ATTRIBUTE = "disabled";
+    private static final String FAIL_ON_ERROR_ATTRIBUTE = "failOnError";
+    private static final String FAIL_TEST_CASE_ON_ERRORS_TAG_NAME = "failTestCaseOnErrors";
+    private static final String TEST_CASE_TAG_NAME = "con:testCase";
+    private static final String TRUE_VALUE = "true";
+    private static final String FALSE_VALUE = "false";
+    private static final String TEST_STEP_TAG_NAME = "con:testStep";
+    private static final String TYPE_ATTRIBUTE = "type";
+    private static final String REQUEST_VALUE = "request";
+    private static final String CONFIG_TAG_NAME = "con:config";
+    private static final String OPERATION_TAG_NAME = "con:operation";
+    private static final String TIME_ATTRIBUTE = "time";
 
     @Override
     public List<Tfn> parsing(File file) {
         //Recupération des dossiers interface
         List<File> interfaceFolders = Arrays.stream(Objects.requireNonNull(file.listFiles()))
                 .filter(f -> MyProperties.getInterfacesToScan().contains(f.getName()))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         //Récupération des fichiers xml
         Map<String, List<File>> mapXmlFiles = getXmlFiles(interfaceFolders);
@@ -39,8 +57,8 @@ public class ReaderTfnXml implements ReaderTfn<File> {
 
         //Retour avec tri
         return tfns.stream()
-                .sorted(getTfnComparator())
-                .collect(Collectors.toList());
+                .sorted(compare())
+                .collect(toList());
 
     }
 
@@ -96,65 +114,58 @@ public class ReaderTfnXml implements ReaderTfn<File> {
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
-            Element project = (Element) doc.getElementsByTagName("con:soapui-project").item(0);
-            String projectName = project.getAttribute("name");
-            NodeList testSuite = doc.getElementsByTagName(getTestSuiteTagName());
+            Element project = (Element) doc.getElementsByTagName(PROJECT_TAG_NAME).item(0);
+            String projectName = project.getAttribute(NAME_ATTRIBUTE);
+            NodeList testSuites = doc.getElementsByTagName(TEST_SUITE_TAG_NAME);
 
-            for (int i = 0; i < testSuite.getLength(); i++) {
+            for (int i = 0; i < testSuites.getLength(); i++) {
 
-                NodeList childNodes = testSuite.item(i).getChildNodes();
+                NodeList testSuiteChildNodes = testSuites.item(i).getChildNodes();
 
-                for (int j = 0; j < childNodes.getLength(); j++) {
+                for (int j = 0; j < testSuiteChildNodes.getLength(); j++) {
 
-                    Node nNode = childNodes.item(j);
+                    Node testSuiteNode = testSuiteChildNodes.item(j);
 
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE &&
-                            getTestCaseTagName().equals(nNode.getNodeName())){
+                    if (testSuiteNode.getNodeType() == Node.ELEMENT_NODE &&
+                            TEST_CASE_TAG_NAME.equals(testSuiteNode.getNodeName())){
 
-                        Element testCase = (Element) nNode;
+                        Element testCase = (Element) testSuiteNode;
 
-                        Element testSuiteElement = (Element) testSuite.item(i);
-
-                        String testCaseDisabled = testCase.getAttribute("disabled");
-                        String failOnError = testCase.getAttribute("failOnError");
-                        String failTestCaseOnErrors = testCase.getAttribute("failTestCaseOnErrors");
-                        String testSuiteDisabled = testSuiteElement.getAttribute("disabled");
-
-                        boolean inactive = isInactiveTfn(testCaseDisabled, failOnError, failTestCaseOnErrors, testSuiteDisabled);
+                        Element testSuite = (Element) testSuites.item(i);
 
                         Tfn tfn = Tfn.builder()
                                 .withFileName(xmlFile.getName())
                                 .withProjectName(projectName)
                                 .withInterfaces(folderInterface)
-                                .withTestSuite(testSuiteElement.getAttribute(getAtributName()))
-                                .withTestCase(testCase.getAttribute(getAtributName()))
-                                .withInactiveStatus(inactive)
+                                .withTestSuite(testSuite.getAttribute(NAME_ATTRIBUTE))
+                                .withTestCase(testCase.getAttribute(NAME_ATTRIBUTE))
+                                .withInactiveStatus( isInactive(testCase, testSuite))
                                 .build();
 
                         //Request
-                        NodeList testCaseChildNodes = nNode.getChildNodes();
+                        NodeList testCaseChildNodes = testSuiteNode.getChildNodes();
 
                         List<Request> requests = new ArrayList<>();
                         for (int k = 0; k < testCaseChildNodes.getLength(); k++) {
 
 
                             if (testCaseChildNodes.item(k).getNodeType() == Node.ELEMENT_NODE &&
-                                    "con:testStep".equals(testCaseChildNodes.item(k).getNodeName())){
+                                    TEST_STEP_TAG_NAME.equals(testCaseChildNodes.item(k).getNodeName())){
 
                                 Element testStep = (Element) testCaseChildNodes.item(k);
 
-                                String type = testStep.getAttribute("type");
+                                String type = testStep.getAttribute(TYPE_ATTRIBUTE);
 
-                                if (StringUtils.isNotEmpty(type) && type.equals("request")){
+                                if (StringUtils.isNotEmpty(type) && type.equals(REQUEST_VALUE)){
 
-                                    String name = testStep.getAttribute("name");
+                                    String name = testStep.getAttribute(NAME_ATTRIBUTE);
                                     boolean three = false;
                                     if (name.length() > 2){
                                         three = StringUtils.isAllUpperCase(name.substring(0, 3));
                                     }
                                     name = three ? name.substring(0,3) : name.substring(0,2);
 
-                                    NodeList configNodeList = testStep.getElementsByTagName("con:config");
+                                    NodeList configNodeList = testStep.getElementsByTagName(CONFIG_TAG_NAME);
                                     Request request = Request.builder().build();
                                     requests.add(request);
 
@@ -166,7 +177,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
                                             Node item = childNodes1.item(m);
 
                                             if (item.getNodeType() == Node.ELEMENT_NODE &&
-                                                    "con:operation".equals(item.getNodeName())){
+                                                    OPERATION_TAG_NAME.equals(item.getNodeName())){
 
                                                     Element operation = (Element) childNodes1.item(m);
                                                     request.setName(name+"."+operation.getTextContent());
@@ -202,19 +213,16 @@ public class ReaderTfnXml implements ReaderTfn<File> {
         return tfns;
     }
 
-    private boolean isInactiveTfn(String testCaseDisabled, String failOnError, String failTestCaseOnErrors, String testSuiteDisabled) {
-        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals("true")
-                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals("true")
-                || StringUtils.isNotEmpty(failOnError) && failOnError.equals("false")
-                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals("false");
+    private boolean isInactive(Element testCase, Element testSuite) {
+        String testCaseDisabled = testCase.getAttribute(DISABLED_ATTRIBUTE);
+        String failOnError = testCase.getAttribute(FAIL_ON_ERROR_ATTRIBUTE);
+        String failTestCaseOnErrors = testCase.getAttribute(FAIL_TEST_CASE_ON_ERRORS_TAG_NAME);
+        String testSuiteDisabled = testSuite.getAttribute(DISABLED_ATTRIBUTE);
 
-    }
-
-    private Comparator<Tfn> getTfnComparator() {
-        return Comparator.comparing(Tfn::getTfnInterface)
-                .thenComparing(Tfn::getFileName)
-                .thenComparing(Tfn::getTestSuite)
-                .thenComparing(Tfn::getStatus);
+        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals(TRUE_VALUE)
+                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals(TRUE_VALUE)
+                || StringUtils.isNotEmpty(failOnError) && failOnError.equals(FALSE_VALUE)
+                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals(FALSE_VALUE);
     }
 
     private void fillResultsRequest(List<Tfn> tfns){
@@ -230,7 +238,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
 
        List<File> xmlResultsFile = fileResults.stream()
                .filter(file -> file.getPath().endsWith(".xml"))
-               .collect(Collectors.toList());
+               .collect(toList());
 
         for (File xmlResultFile : xmlResultsFile) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -244,11 +252,11 @@ public class ReaderTfnXml implements ReaderTfn<File> {
                         && doc.getTextContent().contains(tfn.getTfnInterface());
 
                 if (tfnFind){
-                    NodeList testcases = doc.getElementsByTagName("testcase");
+                    NodeList testcases = doc.getElementsByTagName(TEST_CASE_TAG_NAME);
                     for (int i = 0; i < testcases.getLength(); i++) {
 
                         Element elmntTestCase = (Element) testcases.item(i);
-                        tfn.setTime(elmntTestCase.getAttribute("time"));
+                        tfn.setTime(elmntTestCase.getAttribute(TIME_ATTRIBUTE));
 
                         //Construction de la requête
 
