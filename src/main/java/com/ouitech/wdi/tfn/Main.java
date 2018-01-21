@@ -26,5 +26,13 @@ public class Main {
 
         writer.saveResults(tfns);
 
+        //Factory reader
+
+        //Façade transformation en objet java
+
+        //Factory writer
+
+        //Facçade export resultats
+
     }
 }
