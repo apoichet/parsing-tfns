@@ -1,25 +1,32 @@
 package com.ouitech.wdi.tfn.domain;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 public class Tfn implements Serializable{
 
     private String testCase;
     private String testSuite;
     private String fileName;
-    private boolean active;
+    private boolean inactive;
     private List<String> interfaces;
 
     private Tfn(Builder builder) {
         this.testCase = builder.testCase;
         this.testSuite = builder.testSuite;
         this.fileName = builder.fileName;
-        this.active = builder.active;
+        this.inactive = builder.inactive;
         this.interfaces = builder.interfaces;
+    }
+
+    public boolean is(Predicate<Tfn> predicate){
+        return predicate.evaluate(this);
     }
 
     public String getTestCase() {
@@ -38,8 +45,8 @@ public class Tfn implements Serializable{
         return testSuite;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isInactive() {
+        return inactive;
     }
 
     @Override
@@ -52,9 +59,9 @@ public class Tfn implements Serializable{
         return testCase.equals(tfn.testCase);
     }
 
-    public String isActive(boolean active){
+    public String isInactive(boolean inactive){
 
-        return active?"Active":"Desactive";
+        return inactive?"Desactive":"Active";
 
     }
 
@@ -67,6 +74,14 @@ public class Tfn implements Serializable{
         return CollectionUtils.isNotEmpty(interfaces) && interfaces.add(tfnInterface);
     }
 
+    public static Comparator<Tfn> compare() {
+        return Comparator.comparing(Tfn::nbrInterface)
+                .thenComparing(Tfn::getFileName)
+                .thenComparing(Tfn::getTestSuite)
+                .thenComparing((Function<? super Tfn, ? extends Boolean>) Tfn::isInactive);
+    }
+
+
     public static Builder builder(){
         return new Builder();
     }
@@ -75,7 +90,7 @@ public class Tfn implements Serializable{
         private String testCase;
         private String testSuite;
         private String fileName;
-        private boolean active;
+        private boolean inactive;
         private List<String> interfaces = new ArrayList<>();
 
         public Builder withTestCase(String testCase) {
@@ -93,13 +108,13 @@ public class Tfn implements Serializable{
             return this;
         }
 
-        public Builder withActive(String active) {
-            this.active = Boolean.parseBoolean(active);
+        public Builder withInactive(String inactive) {
+            this.inactive = Boolean.parseBoolean(inactive);
             return this;
         }
 
-        public Builder withActive(boolean active) {
-            this.active = active;
+        public Builder withInactive(boolean inactive) {
+            this.inactive = inactive;
             return this;
         }
 

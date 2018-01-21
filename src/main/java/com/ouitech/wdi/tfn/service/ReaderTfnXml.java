@@ -15,19 +15,28 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.ouitech.wdi.tfn.MyProperties.*;
+import static com.ouitech.wdi.tfn.domain.Tfn.compare;
+import static java.util.stream.Collectors.toList;
 
 public class ReaderTfnXml implements ReaderTfn<File> {
+
+    private static final String DISABLED_ATTRIBUTE = "disabled";
+    private static final String FAIL_ON_ERROR_ATTRIBUTE = "failOnError";
+    private static final String FAIL_TEST_CASE_ON_ERRORS_ATTRIBUTE = "failTestCaseOnErrors";
+    private static final String TRUE_VALUE = "true";
+    private static final String FALSE_VALUE = "false";
+    private static final String TEST_SUITE_TAG_NAME = "con:testSuite";
+    private static final String NAME_ATTRIBUTE = "name";
+    private static final String TEST_CASE_TAG_NAME = "con:testCase";
 
     @Override
     public List<Tfn> parsing(File file) {
         //Recupération des dossiers interface
         List<File> interfaceFolders = Arrays.stream(Objects.requireNonNull(file.listFiles()))
                 .filter(f -> MyProperties.getInterfacesToScan().contains(f.getName()))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         //Récupération des fichiers xml
         Map<String, List<File>> mapXmlFiles = getXmlFiles(interfaceFolders);
@@ -37,8 +46,8 @@ public class ReaderTfnXml implements ReaderTfn<File> {
 
         //Retour avec tri
         return tfnMap.values().stream()
-                .sorted(getTfnComparator())
-                .collect(Collectors.toList());
+                .sorted(compare())
+                .collect(toList());
 
     }
 
@@ -96,49 +105,14 @@ public class ReaderTfnXml implements ReaderTfn<File> {
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
-            NodeList testSuites = doc.getElementsByTagName(getTestSuiteTagName());
+            NodeList testSuites = doc.getElementsByTagName(TEST_SUITE_TAG_NAME);
 
             for (int i = 0; i < testSuites.getLength(); i++) {
 
-                NodeList testSuiteChildNotes = testSuites.item(i).getChildNodes();
+                NodeList testSuiteChildNodes = testSuites.item(i).getChildNodes();
+                Element testSuite = (Element) testSuiteChildNodes.item(i);
 
-                for (int j = 0; j < testSuiteChildNotes.getLength(); j++) {
-
-                    Node nNode = testSuiteChildNotes.item(j);
-
-                    if (nNode.getNodeType() == Node.ELEMENT_NODE &&
-                            getTestCaseTagName().equals(nNode.getNodeName())){
-
-                        Element testSuite = (Element) testSuiteChildNotes.item(i);
-                        Element testCase = (Element) nNode;
-
-                        String key = testCase.getAttribute(getAtributName());
-
-                        String testCaseDisabled = testCase.getAttribute("disabled");
-                        String failOnError = testCase.getAttribute("failOnError");
-                        String failTestCaseOnErrors = testCase.getAttribute("failTestCaseOnErrors");
-                        String testSuiteDisabled = testSuite.getAttribute("disabled");
-                        boolean inactive = isInactiveTfn(testCaseDisabled, failOnError, failTestCaseOnErrors, testSuiteDisabled);
-
-                        if (tfnMap.containsKey(key)){
-                            Tfn tfn = tfnMap.get(key);
-                            tfn.addInterface(folderInterface);
-                        }
-                        else {
-                            Element testSuiteElement = (Element) testSuites.item(i);
-
-                            Tfn tfn = Tfn.builder()
-                                    .withFileName(xmlFile.getName())
-                                    .withFirstInterface(folderInterface)
-                                    .withTestSuite(testSuiteElement.getAttribute(getAtributName()))
-                                    .withTestCase(testCase.getAttribute(getAtributName()))
-                                    .withActive(!inactive)
-                                    .build();
-
-                            tfnMap.put(key, tfn);
-                        }
-                    }
-                }
+                buildTfnWithTestSuites(folderInterface, xmlFile, tfnMap, testSuiteChildNodes, testSuite);
             }
 
         } catch (SAXException | IOException | ParserConfigurationException e) {
@@ -146,20 +120,47 @@ public class ReaderTfnXml implements ReaderTfn<File> {
         }
     }
 
-    private Comparator<Tfn> getTfnComparator() {
-        return Comparator.comparing(Tfn::nbrInterface)
-                .thenComparing(Tfn::getFileName)
-                .thenComparing(Tfn::getTestSuite)
-                .thenComparing((Function<Tfn, Boolean>) Tfn::isActive);
+    private void buildTfnWithTestSuites(String folderInterface, File xmlFile, Map<String, Tfn> tfnMap, NodeList testSuiteChildNodes, Element testSuite) {
+        for (int j = 0; j < testSuiteChildNodes.getLength(); j++) {
+
+            Node testSuiteNode = testSuiteChildNodes.item(j);
+
+            if (testSuiteNode.getNodeType() == Node.ELEMENT_NODE &&
+                    TEST_CASE_TAG_NAME.equals(testSuiteNode.getNodeName())){
+
+                Element testCase = (Element) testSuiteNode;
+                String testCaseName = testCase.getAttribute(NAME_ATTRIBUTE);
+
+                if (tfnMap.containsKey(testCaseName)){
+                    Tfn tfn = tfnMap.get(testCaseName);
+                    tfn.addInterface(folderInterface);
+                }
+                else {
+
+                    Tfn tfn = Tfn.builder()
+                            .withFileName(xmlFile.getName())
+                            .withFirstInterface(folderInterface)
+                            .withTestSuite(testSuite.getAttribute(NAME_ATTRIBUTE))
+                            .withTestCase(testCase.getAttribute(NAME_ATTRIBUTE))
+                            .withInactive(isInactive(testSuite, testCase))
+                            .build();
+
+                    tfnMap.put(testCaseName, tfn);
+                }
+            }
+        }
     }
 
-    private boolean isInactiveTfn(String testCaseDisabled, String failOnError, String failTestCaseOnErrors, String testSuiteDisabled) {
-        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals("true")
-                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals("true")
-                || StringUtils.isNotEmpty(failOnError) && failOnError.equals("false")
-                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals("false");
+    private boolean isInactive(Element testSuite, Element testCase) {
+        String testCaseDisabled = testCase.getAttribute(DISABLED_ATTRIBUTE);
+        String failOnError = testCase.getAttribute(FAIL_ON_ERROR_ATTRIBUTE);
+        String failTestCaseOnErrors = testCase.getAttribute(FAIL_TEST_CASE_ON_ERRORS_ATTRIBUTE);
+        String testSuiteDisabled = testSuite.getAttribute(DISABLED_ATTRIBUTE);
+
+        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals(TRUE_VALUE)
+                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals(TRUE_VALUE)
+                || StringUtils.isNotEmpty(failOnError) && failOnError.equals(FALSE_VALUE)
+                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals(FALSE_VALUE);
+
     }
-
-
-
 }

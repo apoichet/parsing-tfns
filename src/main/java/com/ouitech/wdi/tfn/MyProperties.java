@@ -9,21 +9,19 @@ import java.util.Properties;
 public class MyProperties {
 
     private static final String SEPARATOR = ";";
-    public static final String CON_TEST_SUITE = "testSuite.tagName";
-    public static final String CON_TEST_CASE = "testCase.tagName";
-    public static final String PARENT_FOLDER_PATH = "parentFolder.path";
-    public static final String FILES = "files";
-    public static final String INTERFACES = "interfaces";
-    public static final String ATRIBUT_FAIL_ON_ERROR = "atribut.failOnError";
-    public static final String ATRIBUT_NAME = "atribut.name";
-    public static final String RESULTS_CSV_PATH = "results.csv.path";
-    public static final String RESULTS_JSON_PATH = "results.json.path";
+    private static final String PARENT_FOLDER_PATH = "parentFolder.path";
+    private static final String FILES = "files";
+    private static final String INTERFACES = "interfaces";
+    private static final String RESULTS_CSV_PATH = "results.csv.path";
+    private static final String RESULTS_JSON_PATH = "results.json.path";
 
     private static Properties props;
 
+    private static final String NAMING_PROPERTIES_FILE = "naming.properties";
+
     static {
         try {
-            InputStream input = ClassLoader.getSystemResourceAsStream("naming.properties");
+            InputStream input = ClassLoader.getSystemResourceAsStream(NAMING_PROPERTIES_FILE);
             props = new Properties();
             props.load(input);
         } catch (IOException e) {
@@ -40,29 +38,13 @@ public class MyProperties {
         return props.getProperty(RESULTS_CSV_PATH);
     }
 
-    public static String getAtributFailOnError(){
-        return props.getProperty(ATRIBUT_FAIL_ON_ERROR);
-    }
-
-    public static String getAtributName(){
-        return props.getProperty(ATRIBUT_NAME);
-    }
-
-    public static String getTestSuiteTagName(){
-        return props.getProperty(CON_TEST_SUITE);
-    }
-
-    public static String getTestCaseTagName(){
-        return props.getProperty(CON_TEST_CASE);
-    }
-
-    public static String getFolderParentName(){
+    static String getFolderParentName(){
         return props.getProperty(PARENT_FOLDER_PATH);
     }
 
     public static List<String> getFileTfnToScan(){
-        String tfns = props.getProperty(FILES);
-        return Arrays.asList(tfns.split(SEPARATOR));
+        String tfnFiles = props.getProperty(FILES);
+        return Arrays.asList(tfnFiles.split(SEPARATOR));
     }
 
     public static List<String> getInterfacesToScan(){
