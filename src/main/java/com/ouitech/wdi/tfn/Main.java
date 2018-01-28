@@ -1,38 +1,31 @@
 package com.ouitech.wdi.tfn;
 
-import static com.ouitech.wdi.tfn.MyProperties.getFolderParentName;
+import com.ouitech.wdi.tfn.common.FactoryReaderTfn;
+import com.ouitech.wdi.tfn.common.FactoryWriterTfn;
+import com.ouitech.wdi.tfn.common.ReaderTfn;
+import com.ouitech.wdi.tfn.common.WriterTfn;
+import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlResult;
 
-import java.io.File;
-import java.io.Writer;
 import java.util.List;
 
-import com.ouitech.wdi.tfn.domain.Tfn;
-import com.ouitech.wdi.tfn.service.ReaderTfn;
-import com.ouitech.wdi.tfn.service.ReaderTfnXml;
-import com.ouitech.wdi.tfn.service.WriterResults;
-import com.ouitech.wdi.tfn.service.WriterResultsCsv;
+import static com.ouitech.wdi.tfn.common.FactoryReaderTfn.XML_SUREFIRE_REPORT;
+import static com.ouitech.wdi.tfn.common.FactoryWriterTfn.CSV_FILE;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        File parentFolder = new File(getFolderParentName());
-
-        ReaderTfn<File> reader = new ReaderTfnXml();
-
-        List<Tfn> tfns = reader.parsing(parentFolder);
-
-        WriterResults<Writer> writer = new WriterResultsCsv();
-
-        writer.saveResults(tfns);
-
         //Factory reader
+        ReaderTfn reader = FactoryReaderTfn.create(XML_SUREFIRE_REPORT);
 
         //Façade transformation en objet java
+        List<TfnXmlResult> parsingTfnResults = reader.parsing();
 
         //Factory writer
+        WriterTfn writer = FactoryWriterTfn.create(CSV_FILE);
 
         //Facçade export resultats
+        writer.save(parsingTfnResults);
 
     }
 }

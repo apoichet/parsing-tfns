@@ -1,4 +1,8 @@
-package com.ouitech.wdi.tfn.service;
+package com.ouitech.wdi.tfn.writer.csv;
+
+import com.ouitech.wdi.tfn.common.WriterTfn;
+import com.ouitech.wdi.tfn.reader.xml.surefire.domain.Request;
+import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlResult;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,15 +12,12 @@ import java.util.Objects;
 
 import static com.ouitech.wdi.tfn.MyProperties.getOutputResultsCsvPath;
 
-import com.ouitech.wdi.tfn.domain.Request;
-import com.ouitech.wdi.tfn.domain.Tfn;
-
-public class WriterResultsCsv implements WriterResults<Writer> {
+public class CsvResultTfnWriter implements WriterTfn<TfnXmlResult> {
 
     public static final String TITLE = "File Name;Project Name;Test Suite;Test Case;Status;Interface;Request\n";
 
     @Override
-    public Writer saveResults(List<Tfn> tfns) {
+    public void save(List<TfnXmlResult> tfnResults) {
         Writer writer = null;
         try {
             writer = new FileWriter(getOutputResultsCsvPath());
@@ -25,8 +26,8 @@ public class WriterResultsCsv implements WriterResults<Writer> {
             writer.append(TITLE);
 
             //Ecriture des resultats
-            for (Tfn tfn : tfns) {
-                writer.append(printTfn(tfn));
+            for (TfnXmlResult tfnResult : tfnResults) {
+                writer.append(printTfn(tfnResult));
             }
 
         } catch (IOException e) {
@@ -39,26 +40,26 @@ public class WriterResultsCsv implements WriterResults<Writer> {
                 e.printStackTrace();
             }
         }
-        return writer;
     }
 
-    private String printTfn(Tfn tfn){
-        return tfn.getFileName()+";"+
-                tfn.getProjectName()+";"+
-                tfn.getTestSuite()+";"+
-                tfn.getTestCase()+";"+
-                tfn.getStatus()+";"+
-                tfn.getTfnInterface()+";"+
-                printRequest(tfn.getRequests())+"\n";
+    private String printTfn(TfnXmlResult tfnResult){
+        return tfnResult.getFileName()+";"+
+                tfnResult.getProjectName()+";"+
+                tfnResult.getTestSuite()+";"+
+                tfnResult.getTestCase()+";"+
+                tfnResult.getStatus()+";"+
+                tfnResult.getTfnInterface()+";"+
+                printRequest(tfnResult.getRequests())+"\n";
     }
 
     private String printRequest(List<Request> requests){
 
         StringBuilder print = new StringBuilder();
 
-        requests.forEach(request -> print.append(request.getName()).append(";"));
+        requests.forEach(request -> print.append(request.getService()).append(";"));
 
         return print.toString();
 
     }
+
 }

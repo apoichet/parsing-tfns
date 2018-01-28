@@ -9,7 +9,8 @@ import java.util.Properties;
 public class MyProperties {
 
     private static final String SEPARATOR = ";";
-    public static final String PARENT_FOLDER_PATH = "parentFolder.path";
+    public static final String PARENT_INPUT_FOLDER_PATH = "parentFolder.input.path";
+    public static final String PARENT_OUTPUT_FOLDER_PATH = "parentFolder.output.path";
     public static final String FILES = "files";
     public static final String INTERFACES = "interfaces";
     public static final String RESULTS_CSV_PATH = "results.csv.path";
@@ -36,8 +37,12 @@ public class MyProperties {
         return props.getProperty(RESULTS_CSV_PATH);
     }
 
-    public static String getFolderParentName(){
-        return props.getProperty(PARENT_FOLDER_PATH);
+    public static String getFolderInputParentName(){
+        return props.getProperty(PARENT_INPUT_FOLDER_PATH);
+    }
+
+    public static String getFolderOutputParentName(){
+        return props.getProperty(PARENT_OUTPUT_FOLDER_PATH);
     }
 
     public static List<String> getFileTfnToScan(){

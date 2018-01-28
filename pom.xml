@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>TfnMultiInterface</groupId>
-    <artifactId>com.ouitech.wdi.tfn</artifactId>
+    <artifactId>com.ouitech.wdi.tfnXmlResult</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>

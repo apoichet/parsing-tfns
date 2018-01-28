@@ -1,4 +1,4 @@
-package com.ouitech.wdi.tfn.domain;
+package com.ouitech.wdi.tfn.reader.xml.surefire.domain;
 
 public enum TfnStateEnum {
 

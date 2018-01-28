@@ -1,20 +1,21 @@
-package com.ouitech.wdi.tfn.service;
+package com.ouitech.wdi.tfn.writer.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.ouitech.wdi.tfn.domain.Tfn;
+import com.ouitech.wdi.tfn.common.WriterTfn;
+import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlResult;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 
 import static com.ouitech.wdi.tfn.MyProperties.getOutputResultsJsonPath;
 
-public class WriterResultsJson implements WriterResults<Writer>{
+public class JsonResultWriterTfn implements WriterTfn<TfnXmlResult>{
+
 
     @Override
-    public Writer saveResults(List<Tfn> tfns) {
+    public void save(List<TfnXmlResult> tfnResults) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         FileWriter writer = null;
@@ -22,13 +23,14 @@ public class WriterResultsJson implements WriterResults<Writer>{
         try {
             writer = new FileWriter(getOutputResultsJsonPath());
 
-            String results = mapper.writeValueAsString(tfns);
+            String results = mapper.writeValueAsString(tfnResults);
 
             writer.write(results);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return writer;
     }
+
+
 }

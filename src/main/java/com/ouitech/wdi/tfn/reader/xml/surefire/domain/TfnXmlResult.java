@@ -1,15 +1,15 @@
-package com.ouitech.wdi.tfn.domain;
+package com.ouitech.wdi.tfn.reader.xml.surefire.domain;
+
+import com.ouitech.wdi.tfn.common.TfnResult;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
+import static com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnStateEnum.INACTIVE;
+import static com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnStateEnum.NONE;
 
-import static com.ouitech.wdi.tfn.domain.TfnStateEnum.INACTIVE;
-import static com.ouitech.wdi.tfn.domain.TfnStateEnum.NONE;
-
-public class Tfn {
+public class TfnXmlResult extends TfnResult{
 
 	private String fileName;
 	private String projectName;
@@ -17,10 +17,12 @@ public class Tfn {
 	private String testCase;
 	private String time;
 	private String tfnInterface;
+	private String cause;
+	private String profil;
 	private TfnStateEnum status;
 	private List<Request> requests;
 
-	public Tfn(Builder builder) {
+	public TfnXmlResult(Builder builder) {
 		this.fileName = builder.fileName;
 		this.projectName = builder.projectName;
 		this.testSuite = builder.testSuite;
@@ -29,6 +31,8 @@ public class Tfn {
 		this.tfnInterface = builder.tfnInterface;
 		this.status = builder.status;
 		this.requests = builder.requests;
+		this.cause = builder.cause;
+		this.profil = builder.profil;
 	}
 
 	public String print(){
@@ -99,11 +103,19 @@ public class Tfn {
 		this.requests = requests;
 	}
 
-	public static Comparator<Tfn> compare() {
-		return Comparator.comparing(Tfn::getTfnInterface)
-				.thenComparing(Tfn::getFileName)
-				.thenComparing(Tfn::getTestSuite)
-				.thenComparing(Tfn::getStatus);
+	public String getCause() {
+		return cause;
+	}
+
+	public String getProfil() {
+		return profil;
+	}
+
+	public static Comparator<TfnXmlResult> compare() {
+		return Comparator.comparing(TfnXmlResult::getTfnInterface)
+				.thenComparing(TfnXmlResult::getFileName)
+				.thenComparing(TfnXmlResult::getTestSuite)
+				.thenComparing(TfnXmlResult::getStatus);
 	}
 
 	public static Builder builder(){
@@ -115,9 +127,14 @@ public class Tfn {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		Tfn tfn = (Tfn) o;
+		TfnXmlResult tfnXmlResult = (TfnXmlResult) o;
 
-		return testCase.equals(tfn.testCase);
+		return testCase.equals(tfnXmlResult.testCase);
+	}
+
+	@Override
+	public String getState() {
+		return status.name();
 	}
 
 	public static class Builder{
@@ -127,48 +144,58 @@ public class Tfn {
 		private String testCase;
 		private String time;
 		private String tfnInterface;
+		private String cause;
+		private String profil;
 		private TfnStateEnum status;
 		private List<Request> requests = new ArrayList<>();
 
-		public Tfn.Builder withTime(String time) {
+		public Builder withTime(String time) {
 			this.time = time;
 			return this;
 		}
 
-		public Tfn.Builder withTestCase(String testCase) {
+		public Builder withTestCase(String testCase) {
 			this.testCase = testCase;
 			return this;
 		}
 
-		public Tfn.Builder withTestSuite(String testSuite) {
+		public Builder withTestSuite(String testSuite) {
 			this.testSuite = testSuite;
 			return this;
 		}
 
-		public Tfn.Builder withFileName(String fileName) {
+		public Builder withFileName(String fileName) {
 			this.fileName = fileName;
 			return this;
 		}
 
-		public Tfn.Builder withProjectName(String projectName) {
+		public Builder withProjectName(String projectName) {
 			this.projectName = projectName;
 			return this;
 		}
 
-
-		public Tfn.Builder withInterfaces(String tfnInterface) {
+		public Builder withInterfaces(String tfnInterface) {
 			this.tfnInterface = tfnInterface;
 			return this;
 		}
 
-		public Tfn.Builder withInactiveStatus(boolean inactive){
-		    TfnStateEnum status = inactive ? INACTIVE : NONE;
-		    this.status = status;
-		    return this;
-        }
+		public Builder withCause(String cause) {
+			this.cause = cause;
+			return this;
+		}
 
-		public Tfn build(){
-			return new Tfn(this);
+		public Builder withProfil(String profil) {
+			this.profil = profil;
+			return this;
+		}
+
+		public Builder withStatus(TfnStateEnum status) {
+			this.status = status;
+			return this;
+		}
+
+		public TfnXmlResult build(){
+			return new TfnXmlResult(this);
 		}
 	}
 }
