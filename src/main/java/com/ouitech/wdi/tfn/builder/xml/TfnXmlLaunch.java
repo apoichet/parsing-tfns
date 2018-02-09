@@ -1,5 +1,7 @@
-package com.ouitech.wdi.tfn.reader.xml.surefire.domain;
+package com.ouitech.wdi.tfn.builder.xml;
 
+import com.ouitech.wdi.tfn.builder.xml.input.TfnInputXml;
+import com.ouitech.wdi.tfn.builder.xml.output.surefire.TfnOutputXml;
 import com.ouitech.wdi.tfn.common.TfnLaunch;
 
 import java.util.Optional;

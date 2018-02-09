@@ -1,12 +1,13 @@
 package com.ouitech.wdi.tfn.writer.csv;
 
 import com.ouitech.wdi.tfn.common.WriterTfn;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.Request;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlResult;
+import com.ouitech.wdi.tfn.builder.xml.input.Request;
+import com.ouitech.wdi.tfn.builder.xml.TfnXmlResult;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ public class CsvResultTfnWriter implements WriterTfn<TfnXmlResult> {
     public static final String TITLE = "File Name;Project Name;Test Suite;Test Case;Status;Interface;Request\n";
 
     @Override
-    public void save(List<TfnXmlResult> tfnResults) {
+    public void save(Collection<TfnXmlResult> tfnResults) {
         Writer writer = null;
         try {
             writer = new FileWriter(getOutputResultsCsvPath());

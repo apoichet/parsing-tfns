@@ -1,9 +1,9 @@
-package com.ouitech.wdi.tfn.reader.xml.surefire;
+package com.ouitech.wdi.tfn.builder.xml.output.surefire;
 
 import com.ouitech.wdi.tfn.MyProperties;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.Cause;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnOutputXml;
-import org.apache.commons.lang.StringUtils;
+import com.ouitech.wdi.tfn.builder.xml.output.surefire.TfnOutputXml;
+import com.ouitech.wdi.tfn.builder.xml.output.surefire.Cause;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -107,8 +107,8 @@ public class SurefireReaderTfnXmlOutput {
                 String testCaseName = testCase.getAttribute(NAME_ATTRIBUTE);
                 int indexEquals = testCaseName.indexOf('=');
                 int indexEndProfil = testCaseName.indexOf(']');
-                String profil = testCaseName.substring(indexEquals, indexEndProfil);
-                testCaseName = testCaseName.substring(indexEndProfil);
+                String profil = testCaseName.substring(indexEquals+1, indexEndProfil);
+                testCaseName = testCaseName.substring(indexEndProfil+1);
 
                 TfnOutputXml.Builder builderOuptut = TfnOutputXml.builder()
                         .withFileName(xmlFile.getName())

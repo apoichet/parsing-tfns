@@ -1,7 +1,6 @@
-package com.ouitech.wdi.tfn.reader.xml.surefire.domain;
+package com.ouitech.wdi.tfn.builder.xml.input;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class Request {
 
@@ -12,6 +11,34 @@ public class Request {
 	private String profile;
 	private Double time;
 	private LocalDateTime date;
+
+	public String getInOut() {
+		return inOut;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public String getOperation() {
+		return operation;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getProfile() {
+		return profile;
+	}
+
+	public Double getTime() {
+		return time;
+	}
+
+	public LocalDateTime getDate() {
+		return date;
+	}
 
 	public Request(Builder builder) {
 		this.inOut = builder.inOut;

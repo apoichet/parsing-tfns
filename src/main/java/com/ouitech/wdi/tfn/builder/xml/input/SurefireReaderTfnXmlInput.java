@@ -1,8 +1,7 @@
-package com.ouitech.wdi.tfn.reader.xml.surefire;
+package com.ouitech.wdi.tfn.builder.xml.input;
 
 import com.ouitech.wdi.tfn.MyProperties;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.Request;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnInputXml;
+
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

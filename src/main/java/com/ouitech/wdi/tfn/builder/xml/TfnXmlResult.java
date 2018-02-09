@@ -1,13 +1,11 @@
-package com.ouitech.wdi.tfn.reader.xml.surefire.domain;
+package com.ouitech.wdi.tfn.builder.xml;
 
 import com.ouitech.wdi.tfn.common.TfnResult;
+import com.ouitech.wdi.tfn.builder.xml.input.Request;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import static com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnStateEnum.INACTIVE;
-import static com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnStateEnum.NONE;
 
 public class TfnXmlResult extends TfnResult{
 
@@ -35,80 +33,32 @@ public class TfnXmlResult extends TfnResult{
 		this.profil = builder.profil;
 	}
 
-	public String print(){
-	    return "";
-    };
-
 	public String getFileName() {
 		return fileName;
-	}
-
-	public void setFileName(final String fileName) {
-		this.fileName = fileName;
 	}
 
 	public String getProjectName() {
 		return projectName;
 	}
 
-	public void setProjectName(final String projectName) {
-		this.projectName = projectName;
-	}
-
 	public String getTestSuite() {
 		return testSuite;
-	}
-
-	public void setTestSuite(final String testSuite) {
-		this.testSuite = testSuite;
 	}
 
 	public String getTestCase() {
 		return testCase;
 	}
 
-	public void setTestCase(final String testCase) {
-		this.testCase = testCase;
-	}
-
-	public String getTime() {
-		return time;
-	}
-
-	public void setTime(final String time) {
-		this.time = time;
-	}
-
 	public String getTfnInterface() {
 		return tfnInterface;
-	}
-
-	public void setTfnInterface(final String tfnInterface) {
-		this.tfnInterface = tfnInterface;
 	}
 
 	public TfnStateEnum getStatus() {
 		return status;
 	}
 
-	public void setStatus(final TfnStateEnum status) {
-		this.status = status;
-	}
-
 	public List<Request> getRequests() {
 		return requests;
-	}
-
-	public void setRequests(final List<Request> requests) {
-		this.requests = requests;
-	}
-
-	public String getCause() {
-		return cause;
-	}
-
-	public String getProfil() {
-		return profil;
 	}
 
 	public static Comparator<TfnXmlResult> compare() {

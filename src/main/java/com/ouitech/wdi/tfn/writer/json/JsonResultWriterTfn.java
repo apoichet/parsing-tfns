@@ -3,7 +3,7 @@ package com.ouitech.wdi.tfn.writer.json;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.ouitech.wdi.tfn.common.WriterTfn;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlResult;
+import com.ouitech.wdi.tfn.builder.xml.TfnXmlResult;
 
 import java.io.FileWriter;
 import java.io.IOException;

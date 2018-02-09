@@ -1,14 +1,13 @@
-package com.ouitech.wdi.tfn.reader.xml.surefire;
+package com.ouitech.wdi.tfn.builder.xml;
 
+import com.ouitech.wdi.tfn.builder.xml.TfnStateEnum;
+import com.ouitech.wdi.tfn.builder.xml.TfnXmlLaunch;
+import com.ouitech.wdi.tfn.builder.xml.TfnXmlResult;
 import com.ouitech.wdi.tfn.common.TfnAdapter;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnStateEnum;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlLaunch;
-import com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnXmlResult;
+
 import org.apache.commons.lang.StringUtils;
 
-import static com.ouitech.wdi.tfn.reader.xml.surefire.domain.TfnStateEnum.*;
-
-public class SurefireReportXmlAdapter implements TfnAdapter<TfnXmlLaunch, TfnXmlResult>{
+public class TfnXmlAdapter implements TfnAdapter<TfnXmlLaunch, TfnXmlResult>{
 
     @Override
     public TfnXmlResult adapt(TfnXmlLaunch tfnLaunch) {
@@ -20,7 +19,7 @@ public class SurefireReportXmlAdapter implements TfnAdapter<TfnXmlLaunch, TfnXml
                 .withTestSuite(tfnLaunch.getInput().getTestSuite())
                 .withTestCase(tfnLaunch.getInput().getTestCase());
 
-        TfnStateEnum status = NONE;
+        TfnStateEnum status = TfnStateEnum.NONE;
 
         if (tfnLaunch.getOutput().isPresent()){
 
@@ -28,13 +27,13 @@ public class SurefireReportXmlAdapter implements TfnAdapter<TfnXmlLaunch, TfnXml
                     .withTime(tfnLaunch.getOutput().get().getTime());
 
             if (tfnLaunch.getOutput().get().isSkipped()){
-                status = SKIPPED;
+                status = TfnStateEnum.SKIPPED;
             }
             else if(tfnLaunch.getOutput().get().isFailed()){
-                status = FAILED;
+                status = TfnStateEnum.FAILED;
             }
             else if(tfnLaunch.getOutput().get().isError()){
-                status = ERROR;
+                status = TfnStateEnum.ERROR;
             }
 
             tfnResultBuilder.withCause(
@@ -46,7 +45,7 @@ public class SurefireReportXmlAdapter implements TfnAdapter<TfnXmlLaunch, TfnXml
         else{
 
             if (tfnLaunch.getInput().isInactive()){
-                status = INACTIVE;
+                status = TfnStateEnum.INACTIVE;
             }
         }
 
