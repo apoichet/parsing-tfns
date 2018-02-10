@@ -1,9 +1,6 @@
 package com.ouitech.wdi.tfn.builder.xml.output.surefire;
 
 import com.ouitech.wdi.tfn.MyProperties;
-import com.ouitech.wdi.tfn.builder.xml.output.surefire.TfnOutputXml;
-import com.ouitech.wdi.tfn.builder.xml.output.surefire.Cause;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -17,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static java.util.Optional.*;
 import static java.util.stream.Collectors.toList;
 
 public class SurefireReaderTfnXmlOutput {
@@ -28,9 +26,6 @@ public class SurefireReaderTfnXmlOutput {
     private static final String TIME_ATTRIBUTE = "time";
     private static final String MESSAGE_ATTRIBUTE = "message";
     private static final String TYPE_ATTRIBUTE = "type";
-    private static final String SKIPPED_EVENT = "skipped";
-    private static final String FAILURE_EVENT = "failure";
-    private static final String ERROR_EVENT = "error";
 
     public List<TfnOutputXml> parsing() {
 
@@ -106,7 +101,7 @@ public class SurefireReaderTfnXmlOutput {
 
                 String testCaseName = testCase.getAttribute(NAME_ATTRIBUTE);
                 int indexEquals = testCaseName.indexOf('=');
-                int indexEndProfil = testCaseName.indexOf(']');
+                int indexEndProfil = testCaseName.indexOf(']', indexEquals);
                 String profil = testCaseName.substring(indexEquals+1, indexEndProfil);
                 testCaseName = testCaseName.substring(indexEndProfil+1);
 
@@ -117,9 +112,8 @@ public class SurefireReaderTfnXmlOutput {
                         .withTestCase(testCase.getAttribute(NAME_ATTRIBUTE))
                         .withTime(testCase.getAttribute(TIME_ATTRIBUTE))
                         .withProfile(profil)
-                        .withTestCase(testCaseName);
-
-                buildEventTestCase(builderOuptut, testCase);
+                        .withTestCase(testCaseName)
+                        .withEvent(buildEventTestCase(testCase));
 
                 tfns.add(builderOuptut.build());
             }
@@ -131,31 +125,21 @@ public class SurefireReaderTfnXmlOutput {
         return tfns;
     }
 
-    private void buildEventTestCase(TfnOutputXml.Builder builderOuptut, Element testCase) {
+    private Optional<Event> buildEventTestCase(Element testCase) {
 
         Node testCaseChild = testCase.getFirstChild();
 
         if (testCaseChild!=null){
 
-            //Skipped ? Error ? Failure ?
-            String testCaseEventName = testCaseChild.getNodeName();
-            if (testCaseEventName.equals(SKIPPED_EVENT)){
-                builderOuptut.withSkipped(true);
-            }
-            else{
-                if(testCaseEventName.equals(FAILURE_EVENT)){
-                    builderOuptut.withFailed(true);
-                }
-                else if(testCaseEventName.equals(ERROR_EVENT)) {
-                    builderOuptut.withError(true);
-                }
-                Element testCaseEvent = (Element) testCaseChild;
-                Cause cause = new Cause(testCaseEvent.getAttribute(TYPE_ATTRIBUTE),
-                        testCaseEvent.getAttribute(MESSAGE_ATTRIBUTE));
-                builderOuptut.withCause(Optional.of(cause));
+            Element testCaseEvent = (Element) testCaseChild;
+            Optional<String> type = ofNullable(testCaseEvent.getAttribute(TYPE_ATTRIBUTE));
+            Optional<String> message = ofNullable(testCaseEvent.getAttribute(MESSAGE_ATTRIBUTE));
 
-            }
+            Event event = new Event(testCaseChild.getNodeName(), type, message);
+
+            return of(event);
         }
+        return empty();
     }
 
 }

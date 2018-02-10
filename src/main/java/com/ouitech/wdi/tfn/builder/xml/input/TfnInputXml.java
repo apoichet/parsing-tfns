@@ -9,7 +9,10 @@ public class TfnInputXml {
     private String testSuite;
     private String testCase;
     private String tfnInterface;
-    private boolean inactive;
+    private boolean failTestCaseOnErrors;
+    private boolean failOnError;
+    private boolean disabled;
+    private boolean testSuiteDisabled;
     private List<Request> requests;
 
     public TfnInputXml(TfnInputXml.Builder builder) {
@@ -18,8 +21,23 @@ public class TfnInputXml {
         this.testSuite = builder.testSuite;
         this.testCase = builder.testCase;
         this.tfnInterface = builder.tfnInterface;
-        this.inactive = builder.inactive;
+        this.failTestCaseOnErrors = builder.failTestCaseOnErrors;
         this.requests = builder.requests;
+        this.failOnError = builder.failOnError;
+        this.disabled = builder.disabled;
+        this.testSuiteDisabled = builder.testSuiteDisabled;
+    }
+
+    public boolean isFailOnError() {
+        return failOnError;
+    }
+
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    public boolean isTestSuiteDisabled() {
+        return testSuiteDisabled;
     }
 
     public String getFileName() {
@@ -42,8 +60,8 @@ public class TfnInputXml {
         return tfnInterface;
     }
 
-    public boolean isInactive() {
-        return inactive;
+    public boolean isFailTestCaseOnErrors() {
+        return failTestCaseOnErrors;
     }
 
     public List<Request> getRequests() {
@@ -70,7 +88,10 @@ public class TfnInputXml {
         private String testSuite;
         private String testCase;
         private String tfnInterface;
-        private boolean inactive;
+        private boolean failTestCaseOnErrors;
+        private boolean failOnError;
+        private boolean disabled;
+        private boolean testSuiteDisabled;
         private List<Request> requests;
 
         public TfnInputXml.Builder withTestCase(String testCase) {
@@ -99,8 +120,23 @@ public class TfnInputXml {
             return this;
         }
 
-        public TfnInputXml.Builder withInactive(boolean inactive){
-            this.inactive = inactive;
+        public TfnInputXml.Builder withFailTestCaseOnErrors(boolean failTestCaseOnErrors){
+            this.failTestCaseOnErrors = failTestCaseOnErrors;
+            return this;
+        }
+
+        public TfnInputXml.Builder withFailOnError(boolean failOnError){
+            this.failOnError = failOnError;
+            return this;
+        }
+
+        public TfnInputXml.Builder withDisabled(boolean disabled){
+            this.disabled = disabled;
+            return this;
+        }
+
+        public TfnInputXml.Builder withTestSuiteDisabled(boolean testSuiteDisabled){
+            this.testSuiteDisabled = testSuiteDisabled;
             return this;
         }
 

@@ -2,9 +2,9 @@ package com.ouitech.wdi.tfn.builder.xml;
 
 import com.ouitech.wdi.tfn.common.TfnResult;
 import com.ouitech.wdi.tfn.builder.xml.input.Request;
+import com.ouitech.wdi.tfn.common.TfnStateEnum;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class TfnXmlResult extends TfnResult{
@@ -17,7 +17,6 @@ public class TfnXmlResult extends TfnResult{
 	private String tfnInterface;
 	private String cause;
 	private String profil;
-	private TfnStateEnum status;
 	private List<Request> requests;
 
 	public TfnXmlResult(Builder builder) {
@@ -27,10 +26,22 @@ public class TfnXmlResult extends TfnResult{
 		this.testCase = builder.testCase;
 		this.time = builder.time;
 		this.tfnInterface = builder.tfnInterface;
-		this.status = builder.status;
 		this.requests = builder.requests;
 		this.cause = builder.cause;
 		this.profil = builder.profil;
+		this.requests = builder.requests;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public String getCause() {
+		return cause;
+	}
+
+	public String getProfil() {
+		return profil;
 	}
 
 	public String getFileName() {
@@ -53,19 +64,8 @@ public class TfnXmlResult extends TfnResult{
 		return tfnInterface;
 	}
 
-	public TfnStateEnum getStatus() {
-		return status;
-	}
-
 	public List<Request> getRequests() {
 		return requests;
-	}
-
-	public static Comparator<TfnXmlResult> compare() {
-		return Comparator.comparing(TfnXmlResult::getTfnInterface)
-				.thenComparing(TfnXmlResult::getFileName)
-				.thenComparing(TfnXmlResult::getTestSuite)
-				.thenComparing(TfnXmlResult::getStatus);
 	}
 
 	public static Builder builder(){
@@ -96,7 +96,6 @@ public class TfnXmlResult extends TfnResult{
 		private String tfnInterface;
 		private String cause;
 		private String profil;
-		private TfnStateEnum status;
 		private List<Request> requests = new ArrayList<>();
 
 		public Builder withTime(String time) {
@@ -139,8 +138,8 @@ public class TfnXmlResult extends TfnResult{
 			return this;
 		}
 
-		public Builder withStatus(TfnStateEnum status) {
-			this.status = status;
+		public Builder withRequest(List<Request> requests) {
+			this.requests = requests;
 			return this;
 		}
 

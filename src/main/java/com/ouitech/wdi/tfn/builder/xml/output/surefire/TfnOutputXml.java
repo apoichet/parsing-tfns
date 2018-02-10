@@ -10,10 +10,7 @@ public class TfnOutputXml {
     private String tfnInterface;
     private String profile;
     private String time;
-    private boolean skipped;
-    private boolean failed;
-    private boolean error;
-    private Optional<Cause> cause;
+    private Optional<Event> event;
 
     public String getFileName() {
         return fileName;
@@ -39,20 +36,8 @@ public class TfnOutputXml {
         return time;
     }
 
-    public boolean isSkipped() {
-        return skipped;
-    }
-
-    public boolean isFailed() {
-        return failed;
-    }
-
-    public boolean isError() {
-        return error;
-    }
-
-    public Optional<Cause> getCause() {
-        return cause;
+    public Optional<Event> getEvent() {
+        return event;
     }
 
     public TfnOutputXml(Builder builder) {
@@ -62,10 +47,8 @@ public class TfnOutputXml {
         this.tfnInterface = builder.tfnInterface;
         this.profile = builder.profile;
         this.time = builder.time;
-        this.skipped = builder.skipped;
-        this.failed = builder.failed;
-        this.error = builder.error;
-        this.cause = builder.cause;
+        this.event = builder.event;
+        this.event = builder.event;
     }
 
     public static Builder builder(){
@@ -79,10 +62,7 @@ public class TfnOutputXml {
         private String tfnInterface;
         private String profile;
         private String time;
-        private boolean skipped;
-        private boolean failed;
-        private boolean error;
-        private Optional<Cause> cause;
+        private Optional<Event> event;
 
         public Builder withFileName(String fileName) {
             this.fileName = fileName;
@@ -114,23 +94,8 @@ public class TfnOutputXml {
             return this;
         }
 
-        public Builder withSkipped(boolean skipped) {
-            this.skipped = skipped;
-            return this;
-        }
-
-        public Builder withFailed(boolean failed) {
-            this.failed = failed;
-            return this;
-        }
-
-        public Builder withError(boolean error) {
-            this.error = error;
-            return this;
-        }
-
-        public Builder withCause(Optional<Cause> cause) {
-            this.cause = cause;
+        public Builder withEvent(Optional<Event> event) {
+            this.event = event;
             return this;
         }
 

@@ -1,7 +1,6 @@
 package com.ouitech.wdi.tfn.builder.xml.input;
 
 import com.ouitech.wdi.tfn.MyProperties;
-
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -17,6 +16,9 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.ouitech.wdi.tfn.MyProperties.getFileTfnToScan;
+import static java.lang.Boolean.parseBoolean;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static java.util.stream.Collectors.toList;
 
 public class SurefireReaderTfnXmlInput{
@@ -28,8 +30,6 @@ public class SurefireReaderTfnXmlInput{
     private static final String FAIL_ON_ERROR_ATTRIBUTE = "failOnError";
     private static final String FAIL_TEST_CASE_ON_ERRORS_TAG_NAME = "failTestCaseOnErrors";
     private static final String TEST_CASE_TAG_NAME = "con:testCase";
-    private static final String TRUE_VALUE = "true";
-    private static final String FALSE_VALUE = "false";
     private static final String TEST_STEP_TAG_NAME = "con:testStep";
     private static final String TYPE_ATTRIBUTE = "type";
     private static final String REQUEST_VALUE = "request";
@@ -140,7 +140,10 @@ public class SurefireReaderTfnXmlInput{
                             .withInterfaces(folderInterface)
                             .withTestSuite(testSuite.getAttribute(NAME_ATTRIBUTE))
                             .withTestCase(testCase.getAttribute(NAME_ATTRIBUTE))
-                            .withInactive(isInactive(testCase, testSuite))
+                            .withFailTestCaseOnErrors(parseBoolean(testCase.getAttribute(FAIL_TEST_CASE_ON_ERRORS_TAG_NAME)))
+                            .withFailOnError(parseBoolean(testCase.getAttribute(FAIL_ON_ERROR_ATTRIBUTE)))
+                            .withDisabled(parseBoolean(testCase.getAttribute(DISABLED_ATTRIBUTE)))
+                            .withTestSuiteDisabled(parseBoolean(testSuite.getAttribute(DISABLED_ATTRIBUTE)))
                             .withRequest(requests)
                             .build();
 
@@ -163,8 +166,15 @@ public class SurefireReaderTfnXmlInput{
                     TEST_STEP_TAG_NAME.equals(testCaseChildNodes.item(i).getNodeName())) {
 
                 Element testStep = (Element) testCaseChildNodes.item(i);
+                String type = testStep.getAttribute(TYPE_ATTRIBUTE);
 
-                requests.add(buildRequest(testStep));
+                if (StringUtils.isNotEmpty(type) && type.equals(REQUEST_VALUE)) {
+
+                    Optional<Request> request = getRequest(testStep);
+                    request.ifPresent(requests::add);
+
+                }
+
 
             }
 
@@ -172,49 +182,33 @@ public class SurefireReaderTfnXmlInput{
         return requests;
     }
 
-    private Request buildRequest(Element testStep) {
+    private Optional<Request> getRequest(Element requestStep) {
 
-        String type = testStep.getAttribute(TYPE_ATTRIBUTE);
-        Request.Builder requestBuilder = Request.builder();
+        NodeList configNodeList = requestStep.getElementsByTagName(CONFIG_TAG_NAME);
 
-        if (StringUtils.isNotEmpty(type) && type.equals(REQUEST_VALUE)) {
+        for (int i = 0; i < configNodeList.getLength(); i++) {
 
-            NodeList configNodeList = testStep.getElementsByTagName(CONFIG_TAG_NAME);
+            NodeList requestChildNodes = configNodeList.item(i).getChildNodes();
 
-            for (int i = 0; i < configNodeList.getLength(); i++) {
+            for (int j = 0; j < requestChildNodes.getLength(); j++) {
 
-                NodeList requestChildNodes = configNodeList.item(i).getChildNodes();
+                Node requestNode = requestChildNodes.item(j);
 
-                for (int j = 0; j < requestChildNodes.getLength(); j++) {
+                if (requestNode.getNodeType() == Node.ELEMENT_NODE &&
+                        OPERATION_TAG_NAME.equals(requestNode.getNodeName())) {
 
-                    Node requestNode = requestChildNodes.item(j);
+                    Element requestOperation = (Element) requestChildNodes.item(j);
 
-                    if (requestNode.getNodeType() == Node.ELEMENT_NODE &&
-                            OPERATION_TAG_NAME.equals(requestNode.getNodeName())) {
+                    return of(Request.builder()
+                            .withService(requestStep.getAttribute(NAME_ATTRIBUTE))
+                            .withOperation(requestOperation.getTextContent())
+                            .build());
 
-                        Element requestOperation = (Element) requestChildNodes.item(j);
-
-                        requestBuilder.withService(testStep.getAttribute(NAME_ATTRIBUTE));
-                        requestBuilder.withOperation(requestOperation.getTextContent());
-
-                    }
                 }
             }
         }
 
-        return requestBuilder.build();
-    }
-
-    private boolean isInactive(Element testCase, Element testSuite) {
-        String testCaseDisabled = testCase.getAttribute(DISABLED_ATTRIBUTE);
-        String failOnError = testCase.getAttribute(FAIL_ON_ERROR_ATTRIBUTE);
-        String failTestCaseOnErrors = testCase.getAttribute(FAIL_TEST_CASE_ON_ERRORS_TAG_NAME);
-        String testSuiteDisabled = testSuite.getAttribute(DISABLED_ATTRIBUTE);
-
-        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals(TRUE_VALUE)
-                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals(TRUE_VALUE)
-                || StringUtils.isNotEmpty(failOnError) && failOnError.equals(FALSE_VALUE)
-                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals(FALSE_VALUE);
+        return empty();
     }
 
 }

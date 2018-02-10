@@ -1,6 +1,7 @@
 package com.ouitech.wdi.tfn.writer.csv;
 
-import com.ouitech.wdi.tfn.common.WriterTfn;
+import com.ouitech.wdi.tfn.common.TfnPrinter;
+import com.ouitech.wdi.tfn.common.TfnWriter;
 import com.ouitech.wdi.tfn.builder.xml.input.Request;
 import com.ouitech.wdi.tfn.builder.xml.TfnXmlResult;
 
@@ -13,9 +14,9 @@ import java.util.Objects;
 
 import static com.ouitech.wdi.tfn.MyProperties.getOutputResultsCsvPath;
 
-public class CsvResultTfnWriter implements WriterTfn<TfnXmlResult> {
+public class CsvFileWriterTfnXml implements TfnWriter<TfnXmlResult>, TfnPrinter<TfnXmlResult> {
 
-    public static final String TITLE = "File Name;Project Name;Test Suite;Test Case;Status;Interface;Request\n";
+    public static final String TITLE = "File Name;Project Name;Test Suite;Test Case;Status;Interface;Time;Profile;Cause;Requests\n";
 
     @Override
     public void save(Collection<TfnXmlResult> tfnResults) {
@@ -28,7 +29,7 @@ public class CsvResultTfnWriter implements WriterTfn<TfnXmlResult> {
 
             //Ecriture des resultats
             for (TfnXmlResult tfnResult : tfnResults) {
-                writer.append(printTfn(tfnResult));
+                writer.append(print(tfnResult));
             }
 
         } catch (IOException e) {
@@ -43,14 +44,19 @@ public class CsvResultTfnWriter implements WriterTfn<TfnXmlResult> {
         }
     }
 
-    private String printTfn(TfnXmlResult tfnResult){
-        return tfnResult.getFileName()+";"+
-                tfnResult.getProjectName()+";"+
-                tfnResult.getTestSuite()+";"+
-                tfnResult.getTestCase()+";"+
-                tfnResult.getStatus()+";"+
-                tfnResult.getTfnInterface()+";"+
-                printRequest(tfnResult.getRequests())+"\n";
+    @Override
+    public String print(TfnXmlResult tfnXmlResult) {
+        return tfnXmlResult.getFileName()+";"+
+                tfnXmlResult.getProjectName()+";"+
+                tfnXmlResult.getTestSuite()+";"+
+                tfnXmlResult.getTestCase()+";"+
+                tfnXmlResult.getState()+";"+
+                tfnXmlResult.getTfnInterface()+";"+
+                tfnXmlResult.getTime()+";"+
+                tfnXmlResult.getProfil()+";"+
+                tfnXmlResult.getCause()+";"+
+                printRequest(tfnXmlResult.getRequests())+"\n";
+
     }
 
     private String printRequest(List<Request> requests){
@@ -62,5 +68,4 @@ public class CsvResultTfnWriter implements WriterTfn<TfnXmlResult> {
         return print.toString();
 
     }
-
 }

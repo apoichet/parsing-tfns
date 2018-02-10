@@ -1,4 +1,4 @@
-package com.ouitech.wdi.tfn.builder.xml;
+package com.ouitech.wdi.tfn.common;
 
 public enum TfnStateEnum {
 

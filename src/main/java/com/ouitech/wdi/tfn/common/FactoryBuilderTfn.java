@@ -1,21 +1,23 @@
 package com.ouitech.wdi.tfn.common;
 
-import com.ouitech.wdi.tfn.builder.xml.TfnXmlBuilder;
+import com.ouitech.wdi.tfn.builder.xml.TfnXmlBuilderTfn;
+import com.ouitech.wdi.tfn.builder.xml.TfnXmlConverter;
+import com.ouitech.wdi.tfn.builder.xml.business.TfnXmlStatusManager;
 
 public class FactoryBuilderTfn {
 
 
     public static final String XML_SUREFIRE_REPORT = "XML_SUREFIRE_REPORT";
 
-    public static AbstractTfnResultBuilder create(final String builder){
+    public static AbstractBuilderTfn create(final String builder){
 
         switch (builder){
 
-            case XML_SUREFIRE_REPORT: return new TfnXmlBuilder();
+            case XML_SUREFIRE_REPORT: return new TfnXmlBuilderTfn(new TfnXmlConverter(), new TfnXmlStatusManager());
 
         }
 
-        throw new IllegalArgumentException("Il n'existe pas de Builder Tfn correspondant !");
+        throw new IllegalArgumentException("No existing Builder !");
 
     }
 

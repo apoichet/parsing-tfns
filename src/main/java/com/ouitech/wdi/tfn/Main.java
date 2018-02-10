@@ -5,26 +5,25 @@ import static com.ouitech.wdi.tfn.common.FactoryWriterTfn.CSV_FILE;
 
 import java.util.Collection;
 
-import com.ouitech.wdi.tfn.common.AbstractTfnResultBuilder;
+import com.ouitech.wdi.tfn.common.AbstractBuilderTfn;
 import com.ouitech.wdi.tfn.common.FactoryBuilderTfn;
 import com.ouitech.wdi.tfn.common.FactoryWriterTfn;
-import com.ouitech.wdi.tfn.common.TfnResult;
-import com.ouitech.wdi.tfn.common.WriterTfn;
+import com.ouitech.wdi.tfn.common.TfnWriter;
 
 public class Main {
 
     public static void main(String[] args) {
 
         //Factory Builder
-        AbstractTfnResultBuilder builder = FactoryBuilderTfn.create(XML_SUREFIRE_REPORT);
+        AbstractBuilderTfn builder = FactoryBuilderTfn.create(XML_SUREFIRE_REPORT);
 
-        //Construction en objet java
+        //Build Tfn results
         Collection tfnResults = builder.build();
 
         //Factory writer
-        WriterTfn writer = FactoryWriterTfn.create(CSV_FILE);
+        TfnWriter writer = FactoryWriterTfn.create(CSV_FILE);
 
-        //Export des résultats
+        //Export results
         writer.save(tfnResults);
 
     }

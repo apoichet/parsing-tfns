@@ -1,7 +1,7 @@
 package com.ouitech.wdi.tfn.common;
 
-import com.ouitech.wdi.tfn.writer.csv.CsvResultTfnWriter;
-import com.ouitech.wdi.tfn.writer.json.JsonResultWriterTfn;
+import com.ouitech.wdi.tfn.writer.csv.CsvFileWriterTfnXml;
+import com.ouitech.wdi.tfn.writer.json.JsonFileWriterTfnXml;
 
 public class FactoryWriterTfn {
 
@@ -9,12 +9,12 @@ public class FactoryWriterTfn {
     public static final String ELSATIC_SEARCH = "ELSATIC_SEARCH";
     public static final String JSON_FILE = "JSON_FILE";
 
-    public static WriterTfn create(final String writer){
+    public static TfnWriter create(final String writer){
 
         switch (writer){
 
-            case CSV_FILE : return new CsvResultTfnWriter();
-            case JSON_FILE : return new JsonResultWriterTfn();
+            case CSV_FILE : return new CsvFileWriterTfnXml();
+            case JSON_FILE : return new JsonFileWriterTfnXml();
             case ELSATIC_SEARCH: return null;
 
         }
