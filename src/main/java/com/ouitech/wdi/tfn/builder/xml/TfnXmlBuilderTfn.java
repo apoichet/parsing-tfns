@@ -29,10 +29,10 @@ public class TfnXmlBuilderTfn extends AbstractBuilderTfn<TfnXmlLaunch, TfnXmlRes
 
         List<TfnOutputXml> tfnOutput = readerOutput.parsing();
 
-        return mergingTfn(tfnInput, tfnOutput);
+        return merge(tfnInput, tfnOutput);
     }
 
-    private List<TfnXmlLaunch> mergingTfn(List<TfnInputXml> tfnInputXmls, List<TfnOutputXml> tfnOutputXmls) {
+    private List<TfnXmlLaunch> merge(List<TfnInputXml> tfnInputXmls, List<TfnOutputXml> tfnOutputXmls) {
         List<TfnXmlLaunch> tfnXmlLaunches = new ArrayList<>();
 
         for (TfnInputXml tfnInputXml : tfnInputXmls) {

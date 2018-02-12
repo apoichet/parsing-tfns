@@ -11,9 +11,9 @@ import static com.ouitech.wdi.tfn.common.TfnStateEnum.*;
 
 public class TfnXmlStatusManager implements TfnStatusManager<TfnXmlLaunch> {
 
-    private static final String SKIPPED_EVENT = "skipped";
-    private static final String FAILURE_EVENT = "failure";
-    private static final String ERROR_EVENT = "error";
+    protected static final String SKIPPED_EVENT = "skipped";
+    protected static final String FAILURE_EVENT = "failure";
+    protected static final String ERROR_EVENT = "error";
 
     @Override
     public TfnStateEnum define(TfnXmlLaunch tfnLaunch) {

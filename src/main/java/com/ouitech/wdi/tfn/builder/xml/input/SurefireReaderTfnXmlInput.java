@@ -172,12 +172,8 @@ public class SurefireReaderTfnXmlInput{
 
                     Optional<Request> request = getRequest(testStep);
                     request.ifPresent(requests::add);
-
                 }
-
-
             }
-
         }
         return requests;
     }
