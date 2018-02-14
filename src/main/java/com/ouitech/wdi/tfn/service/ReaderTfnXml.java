@@ -110,7 +110,7 @@ public class ReaderTfnXml implements ReaderTfn<File> {
             for (int i = 0; i < testSuites.getLength(); i++) {
 
                 NodeList testSuiteChildNodes = testSuites.item(i).getChildNodes();
-                Element testSuite = (Element) testSuiteChildNodes.item(i);
+                Element testSuite = (Element) testSuites.item(i);
 
                 buildTfnWithTestSuites(folderInterface, xmlFile, tfnMap, testSuiteChildNodes, testSuite);
             }
@@ -157,10 +157,13 @@ public class ReaderTfnXml implements ReaderTfn<File> {
         String failTestCaseOnErrors = testCase.getAttribute(FAIL_TEST_CASE_ON_ERRORS_ATTRIBUTE);
         String testSuiteDisabled = testSuite.getAttribute(DISABLED_ATTRIBUTE);
 
-        return StringUtils.isNotEmpty(testSuiteDisabled) && testCaseDisabled.equals(TRUE_VALUE)
-                || StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals(TRUE_VALUE)
-                || StringUtils.isNotEmpty(failOnError) && failOnError.equals(FALSE_VALUE)
-                || StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals(FALSE_VALUE);
+        boolean testSuiteDisabledBool = StringUtils.isNotEmpty(testSuiteDisabled) && testSuiteDisabled.equals(TRUE_VALUE);
+        boolean testCaseDisabledBool = StringUtils.isNotEmpty(testCaseDisabled) && testCaseDisabled.equals(TRUE_VALUE);
+        boolean failOnErrorBool = StringUtils.isNotEmpty(failOnError) && failOnError.equals(FALSE_VALUE);
+        boolean failTestCaseOnErrorsBool = StringUtils.isNotEmpty(failTestCaseOnErrors) && failTestCaseOnErrors.equals(FALSE_VALUE);
+
+
+        return testSuiteDisabledBool || testCaseDisabledBool;
 
     }
 }

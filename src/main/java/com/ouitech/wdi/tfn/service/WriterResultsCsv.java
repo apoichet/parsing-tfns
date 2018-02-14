@@ -45,7 +45,7 @@ public class WriterResultsCsv implements WriterResults<Writer> {
         return tfn.getFileName()+ ";"
                 + tfn.getTestSuite() + ";"
                 + tfn.getTestCase() + ";"
-                + tfn.isInactive()+ ";"
+                + tfn.isInactive(tfn.isInactive())+ ";"
                 + tfn.getInterfaces()+ ";"
                 + tfn.nbrInterface() + "\n";
     }
